@@ -103,7 +103,10 @@ export const getAllJobs = catchAsyncErrors(async (req, res, next) => {
     query.location = city;
   }
   if (jobCategory) {
-    query.jobCategory = { $regex: jobCategory, $options: "i" };
+    query.$or = [
+      { jobCategory: { $regex: jobCategory, $options: "i" } },
+      { title: { $regex: jobCategory, $options: "i" } }
+    ];
   }
   if (jobType) {
     query.jobType = jobType;
@@ -113,7 +116,7 @@ export const getAllJobs = catchAsyncErrors(async (req, res, next) => {
       { title: { $regex: searchKeyword, $options: "i" } },
       { companyName: { $regex: searchKeyword, $options: "i" } },
       { location: { $regex: searchKeyword, $options: "i" } },
-      { jobCategory: { $regex: searchKeyword, $options: "i" } },
+      { jobCategory: { $regex: searchKeyword, $options: "i" } }
     ];
   }
   const jobs = await Job.find(query);
