@@ -173,7 +173,6 @@ export const getUser = catchAsyncErrors(async (req, res, next) => {
 export const updateProfile = catchAsyncErrors(async (req, res, next) => {
   const newUserData = {
     name: req.body.name,
-    profilePicture: req.body.profilePicture,
     email: req.body.email,
     phone: req.body.phone,
     address: req.body.address,
@@ -193,6 +192,7 @@ export const updateProfile = catchAsyncErrors(async (req, res, next) => {
       new ErrorHandler("Please provide your all preferred job jobChoices.", 400)
     );
   }
+
   if (req.files) {
     const profilePicture = req.files?.profilePicture;
     const resume = req.files?.resume;
@@ -200,31 +200,55 @@ export const updateProfile = catchAsyncErrors(async (req, res, next) => {
     if (profilePicture) {
       const currentProfilePictureId = req.user.profilePicture?.public_id;
       if (currentProfilePictureId) {
-        await cloudinary.uploader.destroy(currentProfilePictureId);
-      }
-      const newProfilePicture = await cloudinary.uploader.upload(
-        profilePicture.tempFilePath,
-        {
-          folder: "userProfilePictures",
+        try {
+          await cloudinary.uploader.destroy(currentProfilePictureId);
+        } catch (error) {
+          console.error("Cloudinary destroy error (Profile Pic):", error);
         }
-      );
-      newUserData.profilePicture = {
-        public_id: newProfilePicture.public_id,
-        url: newProfilePicture.secure_url,
-      };
-    }
-    if (resume) {
-      const currentResumeId = req.user.resume.public_id;
-      if (currentResumeId) {
-        await cloudinary.uploader.destroy(currentResumeId);
       }
-      const newResume = await cloudinary.uploader.upload(resume.tempFilePath, {
-        folder: "Job_Seekers_Resume",
-      });
-      newUserData.resume = {
-        public_id: newResume.public_id,
-        url: newResume.secure_url,
-      };
+      try {
+        const newProfilePicture = await cloudinary.uploader.upload(
+          profilePicture.tempFilePath,
+          {
+            folder: "UserProfilePictures",
+          }
+        );
+        newUserData.profilePicture = {
+          public_id: newProfilePicture.public_id,
+          url: newProfilePicture.secure_url,
+        };
+      } catch (uploadError) {
+        console.error("Cloudinary upload error (Profile Pic):", uploadError);
+        return next(
+          new ErrorHandler("Failed to upload new profile picture.", 500)
+        );
+      }
+    }
+
+    if (resume && req.user.role === "Job Seeker") {
+      const currentResumeId = req.user.resume?.public_id;
+      if (currentResumeId) {
+        try {
+          await cloudinary.uploader.destroy(currentResumeId);
+        } catch (error) {
+          console.error("Cloudinary destroy error (Resume):", error);
+        }
+      }
+      try {
+        const newResume = await cloudinary.uploader.upload(
+          resume.tempFilePath,
+          {
+            folder: "Job_Seekers_Resume",
+          }
+        );
+        newUserData.resume = {
+          public_id: newResume.public_id,
+          url: newResume.secure_url,
+        };
+      } catch (uploadError) {
+        console.error("Cloudinary upload error (Resume):", uploadError);
+        return next(new ErrorHandler("Failed to upload new resume.", 500));
+      }
     }
   }
 
