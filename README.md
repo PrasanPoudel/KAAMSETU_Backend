@@ -2,7 +2,6 @@
 
 This repository contains the backend program for KAAMSETU which is a job portal platform developed in MERN stack.
 
-
 ## Note
 
 -Config file is not given here to protect the privacy. You can create your own file which contains your own details.
@@ -49,8 +48,6 @@ This repository contains the backend program for KAAMSETU which is a job portal 
 
    The server should now be running at [http://localhost:4000](http://localhost:4000).
 
-
-
 ## Folder Structure
 
 ```
@@ -65,7 +62,7 @@ KAAMSETU_Backend/
 │   ├── jobNotification.js
 │   ├── sendEmail.js
 ├── middlewares/
-│   ├── authentication.js
+│   ├── auth.js
 │   ├── catchAsyncErrors.js
 │   ├── error.js
 ├── models/

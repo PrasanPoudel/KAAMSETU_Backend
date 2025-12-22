@@ -1,5 +1,5 @@
 import express from "express";
-import { isAuthenticated, isAuthorized } from "../middlewares/authentication.js";
+import { isAuthenticated, isAuthorized } from "../middlewares/auth.js";
 import {
   deleteApplication,
   employerGetAllApplication,
