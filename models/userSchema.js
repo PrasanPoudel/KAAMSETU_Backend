@@ -48,6 +48,10 @@ const userSchema = new mongoose.Schema({
     required: true,
     enum: ["Job Seeker", "Employer"],
   },
+  premiumUser: {
+    type: Boolean,
+    default: false,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

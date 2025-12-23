@@ -24,8 +24,8 @@ const applicationSchema = new mongoose.Schema({
       required: true,
     },
     resume: {
-      public_id: String,
-      url: String,
+      type: String,
+      required: true,
     },
     role: {
       type: String,
@@ -48,7 +48,8 @@ const applicationSchema = new mongoose.Schema({
   jobInfo: {
     jobId: {
       type: mongoose.Schema.Types.ObjectId,
-      required: false,
+      ref: "Job",
+      required: true
     },
     jobTitle: {
       type: String,
